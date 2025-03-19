@@ -5,6 +5,8 @@ import ultralytics
 from ultralytics import YOLO
 import cv2
 import base64
+from PIL import Image
+import tempfile
 
 st.set_page_config(page_title="Captcha Processor", page_icon="🔍", layout="centered")
 
@@ -54,32 +56,18 @@ st.markdown(f"""
             background-color: {bg_color};
         }}
 
+        /* Changes the colours in text inputs */
+        .stFileUploader button {{
+            color: {text_color};
+            background-color: {bg_color};
+        }}
+
     </style>
 """, unsafe_allow_html=True)
 
 # Loading our trained model
 model_final = YOLO("./runs/detect/train2/weights/best.pt")
 
-def real_chars(image_path):
-    """
-    Extracts the real characters from an image filename by matching it 
-    with a reference list stored in a text file.
-
-    Parameters:
-    image_path (str): Path to the image file.
-
-    Returns:
-    list: The list of characters associated with the image filename.
-    """
-    files_all = "../data/raw/captchaobjectdetection/all_sequences.txt"
-    chars_per_img = []
-
-    with open(files_all, "r", encoding="utf-8") as fa:
-        chars_per_img = [line.strip().split(",") for line in fa]
-        filename = Path(image_path).stem
-        chars = next((pair[1] for pair in chars_per_img if pair[0] == filename), [])
-    
-    return chars
 
 def capcha_prediction(final_results, names):
     """
@@ -134,7 +122,28 @@ def captcha_boxes_prediction(final_results, image_path):
 st.title("🔍 CAPTCHA Processor")
 st.markdown("### 🚀 Extract text from images using a YOLO-based model")
 
-image_path = st.text_input("📸 **Enter the image path:**", placeholder="e.g., /path/to/image.png")
+
+
+option = st.radio("Select image source:", ("Upload from browser", "Load from local path"))
+
+image_path = None
+
+if option == "Upload from browser":
+    uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
+    
+    if uploaded_file is not None:
+        
+        file_extension = Path(uploaded_file.name).suffix
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as temp_file:
+            image_path = temp_file.name
+            image = Image.open(uploaded_file)
+            image.save(image_path)
+
+
+elif option == "Load from local path":
+    image_path = st.text_input("📸 **Enter the image path:**", placeholder="e.g., /path/to/image.png")
+
 
 if st.button("🔎 Process Image"):
     if image_path:
@@ -142,7 +151,6 @@ if st.button("🔎 Process Image"):
             with st.spinner("Processing... ⏳"):
                 final_results = model_final(image_path)  # Executes the model
                 result = capcha_prediction(final_results, model_final.names)  # Predicts the characters
-                chars = real_chars(image_path)  # Obtains real characters from file
                 img = captcha_boxes_prediction(final_results, image_path)  # Boxes predictions from models
 
             st.divider()
@@ -155,17 +163,9 @@ if st.button("🔎 Process Image"):
                 st.subheader("✅ **Processed Text:**")
                 st.success(result)
 
-                st.subheader("🔠 **Real Text:**")
-                st.info(chars)
-
             with col2:
                 st.subheader("📦 **YOLO Predictions:**")
                 st.image(img, caption="Detected Characters", use_container_width=True)
-
-            if (chars == result):
-                st.success("✔️ Process completed successfully!")
-            else:
-                st.succes("⚠️ Ups, not a perfect prediction, nobody is perfect!")
 
         except Exception as e:
             st.error(f"⚠️ An error occurred: {e}")
