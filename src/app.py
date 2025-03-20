@@ -9,6 +9,7 @@ import base64
 from PIL import Image
 import tempfile
 import torch
+import gdown
 
 st.set_page_config(page_title="Captcha Processor", page_icon="🔍", layout="centered")
 
@@ -70,7 +71,15 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Loading our trained model
-model_final = YOLO("./runs/detect/train2/weights/best.pt")
+
+url = "https://drive.google.com/file/d/13N4pBXgdcP3XxbfyVEW-AQKHGLSZLjzy/view?usp=drive_link"
+model_path = "./"
+
+if not os.path.exists(model_path):
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    gdown.download(url, model_path, quiet=False)
+
+model_final = YOLO("./best.pt")
 
 
 def capcha_prediction(final_results, names):
