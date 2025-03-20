@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+os.environ["OPENCV_AVOID_LIBGL"] = "1"
 from pathlib import Path
 import ultralytics
 from ultralytics import YOLO
