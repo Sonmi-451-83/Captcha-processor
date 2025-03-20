@@ -72,8 +72,8 @@ st.markdown(f"""
 
 # Loading our trained model
 
-url = "https://drive.google.com/file/d/13N4pBXgdcP3XxbfyVEW-AQKHGLSZLjzy/view?usp=drive_link"
-model_path = "./"
+url = "https://drive.google.com/uc?id=13N4pBXgdcP3XxbfyVEW-AQKHGLSZLjzy"
+model_path = "./best.pt"
 
 if not os.path.exists(model_path):
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
