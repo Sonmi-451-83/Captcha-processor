@@ -7,8 +7,11 @@ import cv2
 import base64
 from PIL import Image
 import tempfile
+import torch
 
 st.set_page_config(page_title="Captcha Processor", page_icon="🔍", layout="centered")
+
+torch.classes.__path__ = []
 
 # Background image
 def get_base64_of_image(image_path):
