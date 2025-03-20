@@ -24,7 +24,7 @@ def get_base64_of_image(image_path):
 css = f"""
 <style>
 .stApp {{
-    background-image: url("data:image/png;base64,{get_base64_of_image("streamlit_image.webp")}");
+    background-image: url("data:image/png;base64,{get_base64_of_image("./streamlit_image.webp")}");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
