@@ -15,28 +15,10 @@ st.set_page_config(page_title="Captcha Processor", page_icon="🔍", layout="cen
 
 torch.classes.__path__ = []
 
-# Background image
-def get_base64_of_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
-
-
-css = f"""
-<style>
-.stApp {{
-    background-image: url("data:image/png;base64,{get_base64_of_image("streamlit_image.webp")}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}}
-</style>
-"""
-
-st.markdown(css, unsafe_allow_html=True)
 
 # Define the colors of the app
-text_color = "white"
-bg_color = "black"
+text_color = "black"
+bg_color = "gray"
 
 # Apply custom CSS
 st.markdown(f"""
